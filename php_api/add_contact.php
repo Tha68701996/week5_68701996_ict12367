@@ -18,7 +18,7 @@ if (
 }
 
 try {
-    $sql = "INSERT INTO contacts
+    $sql = "INSERT INTO contact
             (subject, detail, fullname, email)
             VALUES
             (:subject, :detail, :fullname, :email)";

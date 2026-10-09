@@ -1,7 +1,7 @@
 <template>
   <div class="container mt-4">
     <!-- หัวข้อหน้า -->
-    <h2 class="mb-3">รายชื่อพนักงาน</h2>
+    <h2 class="mb-3">รายการการติดต่อ</h2>
     
     <!-- ตารางแสดงข้อมูลลูกค้า -->
      <div class="text-end mb-3">

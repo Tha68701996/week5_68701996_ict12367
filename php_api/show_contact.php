@@ -2,7 +2,7 @@
 include 'condb.php';
 
 try {
-    $stmt = $conn->query("SELECT * FROM contacts");
+    $stmt = $conn->query("SELECT * FROM contact ");
     $datas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode($datas);
     
