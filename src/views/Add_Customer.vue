@@ -47,7 +47,7 @@ export default {
   methods: {
     async addCustomer() {
       try {
-        const res = await fetch("http://localhost/week3_68701996_ict12367/php_api/add_customer.php", {
+        const res = await fetch("http://localhost/week5_68701996_ict12367/php_api/add_customer.php", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(this.customer)

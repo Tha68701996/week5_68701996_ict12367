@@ -43,7 +43,7 @@ export default {
   methods: {
     async addData() {
       try {
-        const res = await fetch("http://localhost/week3_68701996_ict12367/php_api/add_contact.php", {
+        const res = await fetch("http://localhost/week5_68701996_ict12367/php_api/add_contact.php", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(this.contact)

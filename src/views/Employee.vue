@@ -16,6 +16,7 @@
           <th>นามสกุล</th>        <!-- lastName -->
           <th>เบอร์โทร</th>       <!-- phone -->
           <th>ชื่อผู้ใช้</th>      <!-- username -->
+          <th>จัดการ</th>
         </tr>
       </thead>
 
@@ -28,6 +29,11 @@
           <td>{{ item.lastName }}</td>    <!-- นามสกุล -->
           <td>{{ item.phone }}</td>       <!-- เบอร์โทร -->
           <td>{{ item.username }}</td>    <!-- ชื่อผู้ใช้ -->
+          <td>
+            <button class="btn btn-danger btn-sm" :disabled="deletingId === item.emp_id" @click="deleteEmployee(item)">
+              {{ deletingId === item.emp_id ? "กำลังลบ..." : "ลบ" }}
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -58,6 +64,7 @@ export default {
     const employee = ref([]); // เก็บข้อมูลลูกค้า (array)
     const loading = ref(true); // สถานะโหลดข้อมูล
     const error = ref(null);   // เก็บ error
+    const deletingId = ref(null);
 
     // -----------------------------
     // ฟังก์ชันดึงข้อมูลจาก API
@@ -65,7 +72,7 @@ export default {
     const fetchdata = async () => {
       try {
         // เรียก API (PHP)
-        const response = await fetch("http://localhost/week3_68701996_ict12367/php_api/show_emp.php");
+        const response = await fetch("http://localhost/week5_68701996_ict12367/php_api/show_emp.php");
 
         // ตรวจสอบว่าการเรียกสำเร็จหรือไม่
         if (!response.ok) {
@@ -85,6 +92,34 @@ export default {
       }
     };
 
+    const deleteEmployee = async (item) => {
+      if (!window.confirm(`ต้องการลบพนักงาน ${item.firstName} ${item.lastName} หรือไม่?`)) {
+        return;
+      }
+
+      deletingId.value = item.emp_id;
+      error.value = null;
+
+      try {
+        const response = await fetch("http://localhost/week5_68701996_ict12367/php_api/delete_employee.php", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ emp_id: item.emp_id })
+        });
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || "ไม่สามารถลบข้อมูลได้");
+        }
+
+        employee.value = employee.value.filter((employeeItem) => employeeItem.emp_id !== item.emp_id);
+      } catch (err) {
+        error.value = err.message;
+      } finally {
+        deletingId.value = null;
+      }
+    };
+
     // -----------------------------
     // lifecycle: ทำงานเมื่อ component โหลดเสร็จ
     // -----------------------------
@@ -98,7 +133,9 @@ export default {
     return {
       employee,
       loading,
-      error
+      error,
+      deletingId,
+      deleteEmployee
     };
   }
 };
