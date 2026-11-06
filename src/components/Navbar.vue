@@ -16,7 +16,7 @@
             <router-link class="nav-link" to="/">Home</router-link>
           </li>
 
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown" v-if="isLoggedIn">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             Customer
           </a>
@@ -24,23 +24,24 @@
             <li><a class="dropdown-item" href="/customer">Show Customers</a></li>
             <li><a class="dropdown-item" href="/customer_crud">Customer CRUD</a></li>
           </ul>
+        
           </li>
 
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown" v-if="isLoggedIn">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             Employee
           </a>
-          <ul class="dropdown-menu">
+          <ul class="dropdown-menu" v-if="isLoggedIn">
             <li><a class="dropdown-item" href="/employee">Show Employees</a></li>
             <li><a class="dropdown-item" href="/employee_crud">Employee CRUD</a></li>
           </ul>
           </li>
 
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown" v-if="isLoggedIn">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             Contact
           </a>
-          <ul class="dropdown-menu">
+          <ul class="dropdown-menu" v-if="isLoggedIn">
             <li><a class="dropdown-item" href="/contact">Show Contacts</a></li>
             <li><a class="dropdown-item" href="/contact_crud">Contact CRUD</a></li>
           </ul>
@@ -49,8 +50,59 @@
            <li class="nav-item">
             <router-link class="nav-link" to="/about">About</router-link>
           </li>
+          
+          <li class="nav-item">
+            <router-link class="nav-link" to="/asset" v-if="isLoggedIn">Asset</router-link>
+          </li>
 
-        </ul>
+          <!-- ================= Register ================= -->
+                    <!-- แสดงเฉพาะเมื่อยังไม่ Login -->
+                    <li class="nav-item dropdown" v-if="!isLoggedIn">
+                        <a
+                            class="nav-link dropdown-toggle"
+                            href="#"
+                            role="button"
+                            data-bs-toggle="dropdown"
+                        >
+                            Register
+                        </a>
+
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="/add_employee">
+                                    Register
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item" href="/login">
+                                    Login
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                </ul>
+
+                <!-- ================= User Information ================= -->
+                <!-- แสดงเฉพาะเมื่อ Login แล้ว -->
+                <div
+                    class="d-flex align-items-center ms-lg-3 mt-2 mt-lg-0"
+                    v-if="isLoggedIn"
+                >
+                    <span class="text-white me-3">
+                        <i class="bi bi-person-circle"></i>
+                        {{ userName }}
+                    </span>
+
+                    <button
+                        @click="logout"
+                        class="btn btn-danger btn-sm"
+                    >
+                        <i class="bi bi-box-arrow-right"></i>
+                        Logout
+                    </button>
+                </div>
       </div>
     </div>
   </nav>
@@ -58,8 +110,78 @@
 
 <script>
 export default {
-  name: "Navbar"
-}
+    name: "Navbar",
+
+    data() {
+        return {
+            // สถานะ Login
+            isLoggedIn: false,
+
+            // ชื่อผู้ใช้งาน
+            userName: ""
+        };
+    },
+
+    // ทำงานเมื่อ Component ถูกสร้าง
+    mounted() {
+        this.checkLogin();
+    },
+
+    methods: {
+
+        // ตรวจสอบสถานะ Login
+        checkLogin() {
+
+            this.isLoggedIn =
+                localStorage.getItem("adminLogin") === "true";
+
+            if (this.isLoggedIn) {
+
+                try {
+                    // อ่านข้อมูลผู้ใช้
+                    const userData = localStorage.getItem("user");
+
+                    const user = userData
+                        ? JSON.parse(userData)
+                        : null;
+
+                    // กำหนดชื่อผู้ใช้
+                    this.userName =
+                        user?.name1 || user?.username1 || "Admin";
+
+                } catch (error) {
+                    this.userName = "Admin";
+                }
+
+            } else {
+                this.userName = "";
+            }
+        },
+
+        // ออกจากระบบ
+        logout() {
+
+            // ลบข้อมูล Login
+            localStorage.removeItem("adminLogin");
+            localStorage.removeItem("user");
+
+            // รีเซ็ตสถานะ
+            this.isLoggedIn = false;
+            this.userName = "";
+
+            // กลับหน้า Login
+            this.$router.push("/login");
+        }
+    },
+
+    // ตรวจสอบสถานะใหม่เมื่อเปลี่ยนหน้า
+    watch: {
+        '$route'() {
+            this.checkLogin();
+        }
+    }
+};
 </script>
+
 
 
